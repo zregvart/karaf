@@ -38,6 +38,11 @@
     </properties>
 
     <dependencies>
+    	<dependency>
+    		<groupId>org.apache.karaf.shell</groupId>
+    		<artifactId>org.apache.karaf.shell.command.api</artifactId>
+    		<version>${project.version}</version>
+    	</dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -66,16 +71,6 @@
             <artifactId>org.apache.karaf.jaas.boot</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.gogo.runtime</artifactId>

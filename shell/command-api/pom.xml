@@ -28,10 +28,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.apache.karaf.shell.commands</artifactId>
+    <artifactId>org.apache.karaf.shell.command.api</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Karaf :: Shell :: Various Commands</name>
-    <description>This bundles provides basic Karaf shell commands.</description>
+    <name>Apache Karaf :: Shell :: Command :: API</name>
+    <description>Action and Command API, support classes for implementing commands</description>
 
     <properties>
         <appendedResourcesDirectory>${basedir}/../../etc/appended-resources</appendedResourcesDirectory>
@@ -39,31 +39,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.karaf.shell</groupId>
-            <artifactId>org.apache.karaf.shell.command.api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf.shell</groupId>
-            <artifactId>org.apache.karaf.shell.table</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jledit</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.gogo.runtime</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>org.apache.karaf.util</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -72,14 +49,27 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.gogo.runtime</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -98,6 +88,13 @@
                     <include>**/*.info</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/filtered-resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -105,14 +102,26 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
+                        <Import-Package>
+                            *
+                        </Import-Package>
                         <Export-Package>
-                        	!org.apache.karaf.shell.commands.impl*
+                     	    org.apache.karaf.shell.commands;version=${project.version},
+                            org.apache.karaf.shell.commands;version=2.3.0,
+                            org.apache.karaf.shell.commands.basic;version=${project.version},
+                            org.apache.karaf.shell.commands.basic;version=2.3.0,
+                            org.apache.karaf.shell.commands.converter;version=${project.version},
+                            org.apache.karaf.shell.commands.converter;version=2.3.0,
+                            org.apache.karaf.shell.commands.meta;version=${project.version},
+                            org.apache.karaf.shell.commands.meta;version=2.3.0,
+                            org.apache.karaf.shell.console;version=${project.version},
+                            org.apache.karaf.shell.console;version=2.3.0,
+                            org.apache.karaf.shell.console.commands;version=${project.version},
+                            org.apache.karaf.shell.console.commands;version=2.3.0,
+                            org.apache.karaf.shell.console.completer;version=${project.version},
+                            org.apache.karaf.shell.console.completer;version=2.3.0,
+                            org.apache.karaf.shell.inject;version=${project.version},
                         </Export-Package>
-                        <Private-Package>
-                            org.apache.karaf.util.process;-split-package:=merge-first,
-                            org.apache.karaf.util;-split-package:=merge-first,
-                            org.apache.karaf.shell.commands.impl*
-                        </Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

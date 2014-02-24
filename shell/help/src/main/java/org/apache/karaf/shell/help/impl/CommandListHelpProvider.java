@@ -25,21 +25,17 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import jline.Terminal;
-
 import org.apache.felix.gogo.commands.Action;
 import org.apache.felix.service.command.CommandSession;
 import org.apache.felix.service.command.Function;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.CommandWithAction;
-import org.apache.karaf.shell.commands.basic.AbstractCommand;
 import org.apache.karaf.shell.commands.meta.ActionMetaDataFactory;
 import org.apache.karaf.shell.console.HelpProvider;
 import org.apache.karaf.shell.console.NameScoping;
 import org.apache.karaf.shell.console.SessionProperties;
 import org.apache.karaf.shell.table.Col;
 import org.apache.karaf.shell.table.ShellTable;
-import org.fusesource.jansi.Ansi;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -113,10 +109,8 @@ public class CommandListHelpProvider implements HelpProvider {
     }
 
     protected void printMethodList(CommandSession session, PrintStream out, SortedMap<String, String> commands) {
-        Terminal term = (Terminal) session.get(".jline.terminal");
-        int termWidth = term != null ? term.getWidth() : 80;
-        out.println(Ansi.ansi().a(Ansi.Attribute.INTENSITY_BOLD).a("COMMANDS").a(Ansi.Attribute.RESET));
-        ShellTable table = new ShellTable().noHeaders().separator(" ").size(termWidth);
+        out.println("COMMANDS");
+        ShellTable table = new ShellTable().noHeaders().separator(" ").size(getWidth(session));
         table.column(new Col("Command").maxSize(35));
         table.column(new Col("Description"));
         for (Map.Entry<String,String> entry : commands.entrySet()) {
@@ -124,6 +118,11 @@ public class CommandListHelpProvider implements HelpProvider {
             table.addRow().addContent(key, entry.getValue());
         }
         table.print(out, true);
+    }
+    
+    private int getWidth(CommandSession session) {
+        Object cols = session.get("COLUMNS");
+        return  (cols != null && cols instanceof Integer) ? (Integer)cols : 80;
     }
     
     protected Function unProxy(Function function) {
