@@ -146,6 +146,7 @@
 
     <feature name="bundle" description="Provide Bundle support" version="${project.version}">
         <feature>jaas-boot</feature>
+        <feature>scr</feature>
         <bundle start-level="30" start="true">mvn:org.apache.karaf.bundle/org.apache.karaf.bundle.core/${project.version}</bundle>
         <conditional>
             <condition>management</condition>

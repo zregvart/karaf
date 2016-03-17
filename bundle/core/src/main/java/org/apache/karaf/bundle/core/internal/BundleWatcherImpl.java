@@ -18,7 +18,6 @@ package org.apache.karaf.bundle.core.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -32,13 +31,16 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.karaf.bundle.core.BundleInfo;
 import org.apache.karaf.bundle.core.BundleService;
 import org.apache.karaf.bundle.core.BundleWatcher;
 import org.apache.karaf.util.bundles.BundleUtils;
 import org.apache.karaf.util.maven.Parser;
 import org.osgi.framework.*;
 import org.osgi.framework.wiring.FrameworkWiring;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,24 +48,26 @@ import org.slf4j.LoggerFactory;
  * A Runnable singleton which watches at the defined location for bundle
  * updates.
  */
+@Component(service={BundleWatcher.class, BundleListener.class}, immediate = true)
 public class BundleWatcherImpl implements Runnable, BundleListener, BundleWatcher {
 
     private final Logger logger = LoggerFactory.getLogger(BundleWatcherImpl.class);
-
-    private BundleContext bundleContext;
-	private final BundleService bundleService;
-	private final MavenConfigService localRepoDetector;
-
     private AtomicBoolean running = new AtomicBoolean(false);
     private long interval = 1000L;
     private List<String> watchURLs = new CopyOnWriteArrayList<String>();
     private AtomicInteger counter = new AtomicInteger(0);
+    
+    private BundleContext bundleContext;
 
-    @SuppressWarnings("deprecation")
-    public BundleWatcherImpl(BundleContext bundleContext, MavenConfigService mavenConfigService, BundleService bundleService) {
+    @Reference
+    BundleService bundleService;
+
+    @Reference
+    MavenConfigService localRepoDetector;
+    
+    @Activate
+    public void activate(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-		this.localRepoDetector = mavenConfigService;
-        this.bundleService = bundleService;
     }
 
     /* (non-Javadoc)
@@ -240,6 +244,7 @@ public class BundleWatcherImpl implements Runnable, BundleListener, BundleWatche
     /**
      * Stop the execution of the thread and releases the singleton instance.
      */
+    @Deactivate
     public void stop() {
         running.set(false);
         bundleContext.removeBundleListener(this);

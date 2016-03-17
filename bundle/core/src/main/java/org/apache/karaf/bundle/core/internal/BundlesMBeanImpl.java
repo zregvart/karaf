@@ -41,23 +41,32 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.FrameworkWiring;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * BundlesMBean implementation.
- */
+@Component(
+           // TODO use name from system property
+           property={"jmx.objectname=org.apache.karaf:type=bundle,name=root"}
+)
 public class BundlesMBeanImpl extends StandardMBean implements BundlesMBean {
 
     private Logger LOG = LoggerFactory.getLogger(BundlesMBeanImpl.class);
 
     private BundleContext bundleContext;
-    private final BundleService bundleService;
 
-    public BundlesMBeanImpl(BundleContext bundleContext, BundleService bundleService) throws NotCompliantMBeanException {
-        super(BundlesMBean.class);
+    @Reference
+    BundleService bundleService;
+
+    @Activate
+    public void activate(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-        this.bundleService = bundleService;
+    }
+
+    public BundlesMBeanImpl() throws NotCompliantMBeanException {
+        super(BundlesMBean.class);
     }
 
     private List<Bundle> selectBundles(String id) throws Exception {

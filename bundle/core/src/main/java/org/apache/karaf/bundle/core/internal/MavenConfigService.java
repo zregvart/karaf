@@ -28,17 +28,18 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(service = MavenConfigService.class)
 public class MavenConfigService {
 
 	private final Logger logger = LoggerFactory.getLogger(MavenConfigService.class);
-	private final ConfigurationAdmin configurationAdmin;
-
-	public MavenConfigService(ConfigurationAdmin configurationAdmin) {
-		this.configurationAdmin = configurationAdmin;
-	}
+	
+	@Reference
+	ConfigurationAdmin configurationAdmin;
 
     public File getLocalRepository() {
         String path = null;

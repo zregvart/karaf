@@ -16,6 +16,9 @@
  */
 package org.apache.karaf.bundle.core.internal;
 
+import static java.lang.String.format;
+import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,11 +45,12 @@ import org.osgi.framework.wiring.BundleRevisions;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.lang.String.format;
-
+@Component
 public class BundleServiceImpl implements BundleService {
 
     private static Logger LOG = LoggerFactory.getLogger(BundleService.class);
@@ -56,19 +60,21 @@ public class BundleServiceImpl implements BundleService {
      */
     private static final String ORIGINAL_WIRES = "Original-Wires";
 
-    private final BundleContext bundleContext;
-    private final List<BundleStateService> stateServices = new CopyOnWriteArrayList<>();
+    private BundleContext bundleContext;
+    
+    @Reference(cardinality = MULTIPLE, service=BundleStateService.class)
+    List<BundleStateService> stateServices;
 
-    public BundleServiceImpl(BundleContext bundleContext) {
+    /**
+     * For tests
+     */
+    public BundleServiceImpl() {
+        this.stateServices = new CopyOnWriteArrayList<>();
+    }
+    
+    public void activate(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-    }
-
-    public void registerBundleStateService(BundleStateService service) {
-        stateServices.add(service);
-    }
-
-    public void unregisterBundleStateService(BundleStateService service) {
-        stateServices.remove(service);
+        
     }
 
     @Override
